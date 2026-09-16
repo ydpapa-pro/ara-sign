@@ -3,17 +3,27 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>인천아라고 디지털 서명부 이동 중</title>
+  <title>인천아라고 디지털 서명부</title>
   <script>
-    // 표준 구글 웹앱 주소
-    var gasUrl = "https://script.google.com/macros/s/AKfycbxnDuTB6Vp1YMoLpCnJKlmmHL4DO661m5G694QEaDCOQRMFcfD5P1hlYvMHNLPTHQ8lBw/exec?";
+    var gasUrl = "https://script.google.com/macros/s/AKfycbxnDuTB6Vp1YMoLpCnJKlmmHL4DO661m5G694QEaDCOQRMFcfD5P1hlYvMHNLPTHQ8lBw/exec";
     
-    // 페이지 로드 즉시 오류 없는 방식으로 자동 이동
+    function openExternal() {
+      var userAgent = navigator.userAgent.toLowerCase();
+      
+      // 안드로이드: Chrome 앱으로 강제 전환
+      if (userAgent.indexOf('android') !== -1) {
+        var intentUrl = 'intent://' + gasUrl.replace(/https?:\/\//i, '') + '#Intent;scheme=https;package=com.android.chrome;end';
+        location.href = intentUrl;
+      } 
+      // 아이폰(iOS): 일반 이동
+      else {
+        location.href = gasUrl;
+      }
+    }
+
+    // 페이지 진입 즉시 실행
     window.addEventListener('DOMContentLoaded', function() {
-      setTimeout(function() {
-        // location.href 대신 location.replace를 사용하여 차단 회피
-        window.location.replace(gasUrl);
-      }, 100);
+      openExternal();
     });
   </script>
   <style>
@@ -71,10 +81,8 @@
 <body>
   <div class="card">
     <div class="title">인천아라고 디지털 서명부</div>
-    <div class="desc">잠시 후 서명부 페이지로 자동 이동합니다.<br>이동하지 않으면 아래 버튼을 눌러주세요.</div>
-    
-    <!-- 비상용 수동 이동 버튼 -->
-    <a class="btn" href="https://script.google.com/macros/s/AKfycbxnDuTB6Vp1YMoLpCnJKlmmHL4DO661m5G694QEaDCOQRMFcfD5P1hlYvMHNLPTHQ8lBw/exec?">
+    <div class="desc">서명부 페이지로 이동 중입니다.<br>화면이 멈춰있으면 아래 버튼을 눌러주세요.</div>
+    <a class="btn" href="javascript:openExternal();">
       ✍️ 서명 작성하러 가기
     </a>
   </div>
