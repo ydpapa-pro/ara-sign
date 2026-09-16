@@ -2,77 +2,55 @@
 <html lang="ko">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>인천아라고 디지털 서명부 이동 중</title>
   <script>
-    // 주소 끝에 &v=2 파라미터를 추가하여 모바일 브라우저의 기존 캐시/세션 강제 누락
-    var gasUrl = "https://script.google.com/macros/s/AKfycbxnDuTB6Vp1YMoLpCnJKlmmHL4DO661m5G694QEaDCOQRMFcfD5P1hlYvMHNLPTHQ8lBw/exec?&v=2";
+    // /a/macros/yeongjong.icehs.kr/ 구문을 제거한 표준 주소 적용
+    var gasUrl = "https://script.google.com/macros/s/AKfycbxnDuTB6Vp1YMoLpCnJKlmmHL4DO661m5G694QEaDCOQRMFcfD5P1hlYvMHNLPTHQ8lBw/exec";
     
-    window.addEventListener('DOMContentLoaded', function() {
-      setTimeout(function() {
-        window.location.replace(gasUrl);
-      }, 100);
-    });
+    window.onload = function() {
+      var userAgent = navigator.userAgent.toLowerCase();
+      
+      // 안드로이드 환경 (네이버/카카오/기본 QR 스캐너) -> 크롬 브라우저 앱 강제 호출
+      if (userAgent.indexOf('android') !== -1) {
+        var intentUrl = 'intent://' + gasUrl.replace(/https?:\/\//i, '') + '#Intent;scheme=https;package=com.android.chrome;end';
+        location.href = intentUrl;
+      } 
+      // 아이폰(iOS) 및 기타 환경 -> 일반 이동
+      else {
+        location.href = gasUrl;
+      }
+    };
   </script>
   <style>
     body {
-      margin: 0;
-      padding: 0;
       font-family: 'Malgun Gothic', sans-serif;
-      background-color: #f5f7fa;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      min-height: 100vh;
-      -webkit-text-size-adjust: 100%;
-    }
-    .card {
-      width: 90%;
-      max-width: 380px;
-      background: white;
-      padding: 35px 20px;
-      border-radius: 16px;
-      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
       text-align: center;
-      box-sizing: border-box;
+      padding-top: 100px;
+      background-color: #f5f7fa;
+      color: #333;
     }
-    .title {
-      font-size: 20px;
+    .loader {
+      font-size: 18px;
       font-weight: bold;
-      color: #0066b2;
-      margin-bottom: 12px;
     }
-    .desc {
-      font-size: 15px;
-      color: #555;
-      margin-bottom: 25px;
-      line-height: 1.5;
-    }
-    .btn {
-      display: block;
-      width: 100%;
-      padding: 16px 0;
+    .btn-link {
+      margin-top: 20px;
+      display: inline-block;
+      padding: 12px 24px;
       background-color: #0066b2;
       color: white;
       text-decoration: none;
-      font-size: 18px;
+      border-radius: 8px;
       font-weight: bold;
-      border-radius: 10px;
-      box-shadow: 0 4px 10px rgba(0, 102, 178, 0.25);
-      box-sizing: border-box;
-    }
-    .btn:active {
-      background-color: #004d85;
     }
   </style>
 </head>
 <body>
-  <div class="card">
-    <div class="title">인천아라고 디지털 서명부</div>
-    <div class="desc">잠시 후 서명부 페이지로 자동 이동합니다.<br>이동하지 않으면 아래 버튼을 눌러주세요.</div>
-    <a class="btn" href="https://script.google.com/macros/s/AKfycbxnDuTB6Vp1YMoLpCnJKlmmHL4DO661m5G694QEaDCOQRMFcfD5P1hlYvMHNLPTHQ8lBw/exec?&v=2">
-      ✍️ 서명 작성하러 가기
-    </a>
-  </div>
+  <div class="loader">⏳ 서명부 페이지로 이동 중입니다...</div>
+  <p style="font-size:14px; color:#666; margin-top:10px;">자동으로 이동하지 않으면 아래 버튼을 눌러주세요.</p>
+  
+  <!-- 버튼 주소도 표준 주소로 변경 -->
+  <a id="directBtn" class="btn-link" href="https://script.google.com/macros/s/AKfycbxnDuTB6Vp1YMoLpCnJKlmmHL4DO661m5G694QEaDCOQRMFcfD5P1hlYvMHNLPTHQ8lBw/exec">서명부 바로가기</a>
 </body>
 </html>
