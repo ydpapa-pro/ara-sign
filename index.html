@@ -3,76 +3,366 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>인천아라고 디지털 서명부 이동 중</title>
-  <script>
-    // 주소 끝에 &v=2 파라미터를 추가하여 모바일 브라우저의 기존 캐시/세션 강제 누락
-    var gasUrl = "https://script.google.com/macros/s/AKfycbzv83Dv5FVM0jCWjKzOoIxZEqvgBBTD4nZI-gD55SPvz62PUJ376cO-O8cPotEKHQRP2w/exec";
-    
-    window.addEventListener('DOMContentLoaded', function() {
-      setTimeout(function() {
-        window.location.replace(gasUrl);
-      }, 100);
-    });
-  </script>
+  <title>인천아라고 디지털 서명부</title>
+
   <style>
-    body {
+    html, body {
       margin: 0;
       padding: 0;
-      font-family: 'Malgun Gothic', sans-serif;
-      background-color: #f5f7fa;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      min-height: 100vh;
-      -webkit-text-size-adjust: 100%;
-    }
-    .card {
-      width: 90%;
-      max-width: 380px;
-      background: white;
-      padding: 35px 20px;
-      border-radius: 16px;
-      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
-      text-align: center;
-      box-sizing: border-box;
-    }
-    .title {
-      font-size: 20px;
-      font-weight: bold;
-      color: #0066b2;
-      margin-bottom: 12px;
-    }
-    .desc {
-      font-size: 15px;
-      color: #555;
-      margin-bottom: 25px;
-      line-height: 1.5;
-    }
-    .btn {
-      display: block;
       width: 100%;
-      padding: 16px 0;
-      background-color: #0066b2;
-      color: white;
-      text-decoration: none;
-      font-size: 18px;
-      font-weight: bold;
-      border-radius: 10px;
-      box-shadow: 0 4px 10px rgba(0, 102, 178, 0.25);
+      height: 100%;
+      background-color: #f5f7fa;
+      font-family: 'Malgun Gothic', -apple-system, BlinkMacSystemFont, sans-serif;
+      -webkit-text-size-adjust: 100%; 
+    }
+    .wrapper {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      min-height: 100vh;
+      padding: 15px;
       box-sizing: border-box;
     }
-    .btn:active {
-      background-color: #004d85;
+    .container {
+      width: 100%;
+      max-width: 450px;
+      background: white;
+      padding: 25px 20px;
+      border-radius: 16px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+      box-sizing: border-box;
+      text-align: center;
+    }
+    h2 { margin-top: 0; font-size: 26px; color: #0066b2; margin-bottom: 20px; font-weight: bold; }
+    
+    input[type="text"], select {
+      width: 100%;
+      height: 52px;
+      padding: 0 15px;
+      margin-bottom: 15px;
+      border: 1px solid #cbd5e0;
+      border-radius: 10px;
+      font-size: 18px;
+      box-sizing: border-box;
+      background-color: #f7fafc;
+      color: #2d3748;
+      -webkit-appearance: none;
+      -moz-appearance: none;
+      appearance: none;
+    }
+
+    select {
+      background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23718096' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+      background-repeat: no-repeat;
+      background-position: right 14px center;
+      background-size: 18px;
+    }
+
+    input[type="text"]:focus, select:focus {
+      outline: none; border-color: #0066b2; background-color: #fff;
+    }
+    .canvas-wrap {
+      width: 100%;
+      height: 230px;
+      margin-top: 10px;
+      margin-bottom: 20px;
+      position: relative;
+      touch-action: none;
+    }
+    canvas { 
+      position: absolute; left: 0; top: 0; width: 100%; height: 100%;
+      border: 2px dashed #a0aec0; border-radius: 8px; background-color: #ffffff; 
+      cursor: crosshair; box-sizing: border-box;
+      touch-action: none;
+    }
+    .btn-group { display: flex; justify-content: space-between; gap: 12px; }
+    button {
+      height: 54px;
+      font-size: 18px;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+    .btn-clear { background-color: #e2e8f0; color: #4a5568; width: 35%; }
+    .btn-submit { background-color: #0066b2; color: white; width: 65%; box-shadow: 0 4px 6px rgba(0,102,178,0.2); }
+    .btn-submit:active { background-color: #004d85; }
+    #status { 
+      margin-top: 10px; 
+      font-weight: bold; 
+      font-size: 18px; 
+      text-align: center; 
+      min-height: 28px;
+      padding: 6px 12px;
+      border-radius: 8px;
+      transition: all 0.3s ease;
+      box-sizing: border-box;
+    }
+    .processing-mode {
+      background-color: #fffaf0; 
+      border: 2px solid #dd6b20; 
+      color: #dd6b20 !important; 
+      animation: alertPulse 1.2s infinite;
+    }
+    @keyframes alertPulse {
+      0% { transform: scale(1.0); opacity: 0.9; }
+      50% { transform: scale(1.02); opacity: 1; }
+      100% { transform: scale(1.0); opacity: 0.9; }
+    }
+    .school-logo {
+      width: 290px;
+      height: 70px; 
+      max-width: 100%;
+      margin: 12px auto 0 auto; 
+      display: block;
+      object-fit: contain;
     }
   </style>
 </head>
 <body>
-  <div class="card">
-    <div class="title">인천아라고 디지털 서명부</div>
-    <div class="desc">잠시 후 서명부 페이지로 자동 이동합니다.<br>이동하지 않으면 아래 버튼을 눌러주세요.</div>
-    <a class="btn" href="https://script.google.com/macros/s/AKfycbzv83Dv5FVM0jCWjKzOoIxZEqvgBBTD4nZI-gD55SPvz62PUJ376cO-O8cPotEKHQRP2w/exec">
-      ✍️ 서명 작성하러 가기
-    </a>
+<div class="wrapper">
+  <div class="container">
+    <h2>인천아라고 디지털 등록부</h2>
+    
+    <select id="userDept" required>
+      <option value="" disabled selected>소속(부서명)을 선택하세요</option>
+      <option value="교장">교장</option>
+      <option value="교감">교감</option>
+      <option value="행정실장">행정실장</option>
+      <option value="교무기획부">교무기획부</option>
+      <option value="교육과정부">교육과정부</option>
+      <option value="교육연구부">교육연구부</option>
+      <option value="생활교육부">생활교육부</option>
+      <option value="문화체육부">문화체육부</option>
+      <option value="창의과학부">창의과학부</option>
+      <option value="융합정보부">융합정보부</option>
+      <option value="국제창체부">국제창체부</option>
+      <option value="인문사회부">인문사회부</option>
+      <option value="진로진학부">진로진학부</option>
+      <option value="1학년부">1학년부</option>
+      <option value="2학년부">2학년부</option>
+      <option value="3학년부">3학년부</option>
+      <option value="행정실">행정실</option>
+      <option value="급식실">급식실</option>
+      <option value="기타/외부인">기타/외부인</option>
+    </select>
+
+    <input type="text" id="userName" placeholder="이름을 입력하세요" required>
+    
+    <div class="canvas-wrap">
+      <canvas id="sigCanvas"></canvas>
+    </div>
+    <div class="btn-group">
+      <button class="btn-clear" onclick="clearCanvas()">지우기</button>
+      <button class="btn-submit" id="submitBtn" onclick="submitSignature()">서명 제출</button>
+    </div>
+    <div id="status"></div>
+    
+    <img id="schoolLogo" src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 460 110'><defs><path id='textPathTop' d='M 12 55 A 43 43 0 1 1 98 55'/><path id='textPathBottom' d='M 12 55 A 43 43 0 0 0 98 55'/></defs><g><circle cx='55' cy='55' r='52' fill='none' stroke='%2338A5E1' stroke-width='3.5'/><circle cx='55' cy='55' r='46' fill='%2338A5E1'/><circle cx='55' cy='55' r='31' fill='%23ffffff'/><text font-family='Arial, sans-serif' font-weight='bold' font-size='6.8' fill='%23ffffff' letter-spacing='0.3'><textPath href='%23textPathTop' startOffset='50%' text-anchor='middle'>INCHEON ARA HIGH SCHOOL</textPath></text><text font-family='Malgun Gothic, Apple SD Gothic Neo, sans-serif' font-weight='bold' font-size='7.5' fill='%23ffffff' letter-spacing='1.2'><textPath href='%23textPathBottom' startOffset='50%' text-anchor='middle'>인천아라고등학교</textPath></text><g fill='%2338A5E1'><text x='34' y='60' font-family='Arial, sans-serif' font-weight='bold' font-size='7.5'>2022</text><circle cx='44' cy='45' r='5.5'/><path d='M 50 40 C 58 40 65 35 76 29 C 67 35 56 46 45 47 Z'/><path d='M 72 51 C 62 55 52 59 40 59 C 49 59 67 53 75 46 Z'/><path d='M 36 68 L 67 68 C 73 68 77 62 77 61 C 77 56 74 51 74 51 C 74 51 74 64 66 64 L 36 64 Z'/><path d='M 36 75 L 66 75 C 75 75 80 67 80 59 L 77 59 C 77 66 73 71 66 71 L 36 71 Z'/></g></g><g transform='translate(125, 18)'><text x='0' y='42' font-family='Malgun Gothic, Apple SD Gothic Neo, sans-serif' font-weight='bold' font-size='38' fill='%23222222' letter-spacing='1.5'>인천아라고등학교</text><text x='3' y='66' font-family='Arial, sans-serif' font-weight='bold' font-size='15.5' fill='%23666666' letter-spacing='3.5'>INCHEON ARA HIGH SCHOOL</text></g></svg>" alt="인천아라고 로고" class="school-logo">
   </div>
+</div>
+
+<script>
+  // 사용자분의 최신 Google Apps Script 웹앱 URL이 적용되어 있습니다.
+  const gasUrl = "https://script.google.com/macros/s/AKfycbzv83Dv5FVM0jCWjKzOoIxZEqvgBBTD4nZI-gD55SPvz62PUJ376cO-O8cPotEKHQRP2w/exec";
+
+  const canvas = document.getElementById('sigCanvas');
+  const ctx = canvas.getContext('2d');
+  const submitBtn = document.getElementById('submitBtn');
+  const statusDiv = document.getElementById('status');
+  let isDrawing = false;
+  let hasSigned = false;
+
+  function hideKeyboard() {
+    if (document.activeElement && (document.activeElement.tagName === 'INPUT' || document.activeElement.tagName === 'SELECT')) {
+      document.activeElement.blur();
+    }
+  }
+
+  document.addEventListener('DOMContentLoaded', function() {
+    const userNameInput = document.getElementById('userName');
+
+    if (userNameInput) {
+      userNameInput.addEventListener('keydown', function(e) {
+        if (e.key === 'Enter' || e.keyCode === 13) {
+          e.preventDefault();
+          hideKeyboard();
+        }
+      });
+    }
+
+    ['touchstart', 'mousedown', 'pointerdown'].forEach(function(eventType) {
+      canvas.addEventListener(eventType, function() {
+        hideKeyboard();
+      }, { capture: true, passive: true });
+    });
+  });
+
+  function getOrCreateDeviceID() {
+    let deviceId = localStorage.getItem('ara_device_uuid');
+    if (!deviceId) {
+      const s4 = () => Math.floor((1 + Math.random()) * 0x10000).toString(16).substring(1);
+      deviceId = "ARA-" + s4() + s4() + "-" + s4();
+      localStorage.setItem('ara_device_uuid', deviceId);
+    }
+    let ua = navigator.userAgent;
+    let model = "PC/기타";
+    if (ua.indexOf("Android") > -1) model = "Android폰";
+    else if (ua.indexOf("iPhone") > -1) model = "iPhone";
+    else if (ua.indexOf("iPad") > -1) model = "iPad";
+    return deviceId + " (" + model + ")";
+  }
+
+  function initCanvas() {
+    const rect = canvas.getBoundingClientRect();
+    const dpr = window.devicePixelRatio || 1;
+    if (rect.width === 0 || rect.height === 0) return;
+
+    canvas.width = rect.width * dpr;
+    canvas.height = rect.height * dpr;
+    ctx.scale(dpr, dpr);
+    ctx.strokeStyle = '#000000';
+    ctx.lineWidth = 3.5;
+    ctx.lineCap = 'round';
+    ctx.lineJoin = 'round';
+  }
+
+  function getMousePos(e) { 
+    const rect = canvas.getBoundingClientRect(); 
+    return { x: e.clientX - rect.left, y: e.clientY - rect.top }; 
+  }
+  
+  function getTouchPos(e) { 
+    const rect = canvas.getBoundingClientRect(); 
+    const touch = (e.touches && e.touches[0]) ? e.touches[0] : ((e.changedTouches && e.changedTouches[0]) ? e.changedTouches[0] : e);
+    return { 
+      x: touch.clientX - rect.left, 
+      y: touch.clientY - rect.top 
+    }; 
+  }
+
+  canvas.addEventListener('mousedown', (e) => { 
+    isDrawing = true; hasSigned = true;
+    ctx.beginPath(); 
+    const p = getMousePos(e); 
+    ctx.moveTo(p.x, p.y); 
+  });
+  
+  canvas.addEventListener('mousemove', (e) => { 
+    if (!isDrawing) return; 
+    const p = getMousePos(e); 
+    ctx.lineTo(p.x, p.y); 
+    ctx.stroke(); 
+  });
+  
+  canvas.addEventListener('mouseup', () => isDrawing = false);
+  canvas.addEventListener('mouseleave', () => isDrawing = false);
+
+  canvas.addEventListener('touchstart', (e) => {
+    if (e.cancelable) e.preventDefault();
+    hideKeyboard();
+    isDrawing = true; 
+    hasSigned = true;
+    ctx.beginPath();
+    const p = getTouchPos(e); 
+    ctx.moveTo(p.x, p.y);
+  }, { passive: false });
+
+  canvas.addEventListener('touchmove', (e) => {
+    if (e.cancelable) e.preventDefault();
+    if (!isDrawing) return;
+    const p = getTouchPos(e); 
+    ctx.lineTo(p.x, p.y);
+    ctx.stroke();
+  }, { passive: false });
+
+  canvas.addEventListener('touchend', (e) => { 
+    if (e.cancelable) e.preventDefault(); 
+    isDrawing = false; 
+    ctx.beginPath();
+  }, { passive: false });
+  
+  canvas.addEventListener('touchcancel', () => { 
+    isDrawing = false; 
+    ctx.beginPath(); 
+  });
+
+  function clearCanvas() { 
+    ctx.clearRect(0, 0, canvas.width, canvas.height); 
+    hasSigned = false;
+    statusDiv.innerText = ""; 
+    statusDiv.className = ""; 
+    statusDiv.style.backgroundColor = "transparent";
+    statusDiv.style.border = "none";
+  }
+
+  function submitSignature() {
+    const dept = document.getElementById('userDept').value.trim();
+    const name = document.getElementById('userName').value.trim();
+    
+    if (!dept) { alert('소속(부서명)을 선택해주세요!'); return; }
+    if (!name) { alert('이름을 입력해주세요!'); return; }
+    if (!hasSigned) { alert('서명란에 서명을 작성해 주세요!'); return; }
+    
+    submitBtn.disabled = true;
+    statusDiv.innerText = "⏳ 서명 데이터 전송 중입니다...";
+    statusDiv.className = "processing-mode";
+    
+    const tempCanvas = document.createElement('canvas');
+    tempCanvas.width = canvas.width;
+    tempCanvas.height = canvas.height;
+    const tempCtx = tempCanvas.getContext('2d');
+    tempCtx.fillStyle = '#FFFFFF';
+    tempCtx.fillRect(0, 0, tempCanvas.width, tempCanvas.height);
+    tempCtx.drawImage(canvas, 0, 0);
+    
+    const dataUrl = tempCanvas.toDataURL('image/jpeg', 0.85);
+    const deviceId = getOrCreateDeviceID();
+
+    const payload = {
+      dept: dept,
+      name: name,
+      deviceId: deviceId,
+      signatureImage: dataUrl
+    };
+
+    fetch(gasUrl, {
+      method: 'POST',
+      mode: 'no-cors',
+      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+      body: JSON.stringify(payload)
+    })
+    .then(() => {
+      submitBtn.disabled = false;
+      statusDiv.innerText = "✅ 서명이 성공적으로 완료되었습니다!";
+      statusDiv.className = "";
+      statusDiv.style.backgroundColor = "#e6fffa";
+      statusDiv.style.border = "1px solid #b2f5ea";
+      statusDiv.style.color = "#319795";
+      alert("제출이 완료되었습니다!");
+      clearCanvas();
+      document.getElementById('userDept').selectedIndex = 0;
+      document.getElementById('userName').value = "";
+    })
+    .catch(error => {
+      submitBtn.disabled = false;
+      statusDiv.className = "";
+      statusDiv.innerText = "❌ 전송 실패";
+      statusDiv.style.color = "#e53e3e";
+      alert("통신 오류 발생: " + error.message);
+    });
+  }
+
+  window.addEventListener('load', initCanvas);
+  
+  window.addEventListener('resize', function() {
+    if (!hasSigned) initCanvas();
+  });
+
+  canvas.addEventListener('touchstart', function() {
+    if (canvas.width === 0) initCanvas();
+  }, { once: true });
+</script>
 </body>
 </html>
